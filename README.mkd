@@ -1,3 +1,8 @@
+#This Fork
+Fixes:
+* Crashes related to IOError (broken links)
+* Crashes related to mutagen.flac.error
+
 #Overview
 
 Symmusic is meant for poorly-named music collections which you don't want to manipulate, but need to browse in a nice manner. It recursively reads a directory for audio tags and uses them to build a new  directory structure. The bottom-level audio files are then symbolically linked to their originating file. This allows one to keep multiple directories organized by artist, genre, album, etc without much disk overhead even for large music collections.

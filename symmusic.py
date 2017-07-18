@@ -86,7 +86,8 @@ def getTag(f,fun,tagname):
     tags = fun(f)
   # Next line returns Unknown for tags that aren't there, and avoids issues
   # with incomplete flac files. 
-  except (ValueError,  mutagen.flac.FLACNoHeaderError, mutagen.flac.error):
+  except (ValueError, IOError,  \
+          mutagen.flac.FLACNoHeaderError, mutagen.flac.error):
     tags = 'Unknown'
   if tags.has_key(tagname):
     try:
