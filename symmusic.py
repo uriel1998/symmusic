@@ -69,6 +69,14 @@ def getDict(args,dictionary):
     tags.append(dictionary[t])
   return tags
 
+def processString(txt):
+    """ Remove special characters from tags """
+    specialChars = "!#$%^&*()/\\:|\"" 
+    for specialChar in specialChars:
+        txt = txt.replace(specialChar, '')
+    return txt
+
+
 def getMusic(src,pattern):
   """ Get a list of music files with a particular file extension 
   Takes an absolute path (src), and a string file extension (e.g. '.mp3')
@@ -94,16 +102,31 @@ def getTag(f,fun,tagname):
     try:
       tag = tags[tagname][0]
       if tag:
+        if tagname == 'tracknumber':
+            counter = tag.rfind("/")
+            if counter > 0:
+                tag = tag[:tag.rfind("/")]
+            tag=tag.zfill(2)    
+        
         cleaned = tag.encode('UTF-8') # Encode things just in case.
-        # Convert '/' in names to '-' to avoid file path issues.
-        slashproofed = re.sub(r"/","-",str(cleaned,"utf-8")) 
+        
+        # Remove special characters in names a la "$validate" in puddletag
+        # TODO: Make this configurable
+        slashproofed = processString(str(cleaned,"utf-8"))         
+        
         return slashproofed
       else:
-        return 'Unknown'
+        if tagname == 'tracknumber':
+            return "00"
+        else:
+            return 'Unknown'
     except IndexError:
       pass
   else:
-      return 'Unknown'
+        if tagname == 'tracknumber':
+            return "00"
+        else:
+            return 'Unknown'
   
 def getTagList(f,fun,ext,tagnames,lower):
   """ Get multiple tags for a file, based on a given list """
@@ -112,13 +135,6 @@ def getTagList(f,fun,ext,tagnames,lower):
     tag = getTag(f,fun,tagname)
     if lower == True:
         tag = tag.lower()
-    if tagname == 'tracknumber':
-        if tag == 'unknown':
-            tag = ""
-        counter = tag.rfind("-")
-        if counter > 0:
-            tag = tag[:tag.rfind("-")]
-        tag=tag.zfill(2)    
     tags.append(tag)
   return tags
 
@@ -131,6 +147,9 @@ def makeDirStructure(dirs,nametags,ext,source,base):
         os.makedirs(os.path.join(base,tag))
       base = os.path.join(base,tag)
     name = "-".join(nametags) + ext
+    # remove leading undefined number tags at beginning of filename
+    # todo - make configurable
+    name = re.sub('^00-','',name)
     os.symlink(source,os.path.join(base,name))
   except (OSError,  AttributeError):
     pass

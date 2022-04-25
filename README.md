@@ -8,6 +8,11 @@ changed divider to "-" (maybe to make configurable later?)
 removed extension on album as dirname (like, why)
 changed tracknumber to be padded 2 digit of the actual track number
 00 if no track number, not unknown
+if leading with unknown track number (e.g. ^00-trackname) then omit track# (to make configurable later)
+validation and removal of special characters from filename (to make configurable later)
+
+--lower --dn %l --fn %n-%a-%t --art --formats mp3 --src /home/steven/music --dst /home/steven/tmp/symalbum
+
 
 Fixes:
 
@@ -21,7 +26,7 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 ###Dependencies
 
 * UNIX-like OS. (Linux, Mac OSX)
-* Python (2.6 and more)
+* Python (3.9 and more)
 * [mutagen][] -- a python module to handle audio metatdata
 
 #Features
