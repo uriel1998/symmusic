@@ -3,6 +3,11 @@
 Fixes:
 
 Python3 upgrade
+added --lower for lowercase
+changed divider to "-" (maybe to make configurable later?)
+removed extension on album as dirname (like, why)
+changed tracknumber to be padded 2 digit of the actual track number
+00 if no track number, not unknown
 
 Fixes:
 
@@ -43,22 +48,22 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 ####Required
 
 * *--dn* : directory names. 
-	- each argument will create a directory level. Follows given order.
-	- *options*: %a (artist), %l (album), %g (genre), %n (track number), %t (track title), %y (year/date)
-	- *note*: albums (%l) will be appended with file extensions.
+    - each argument will create a directory level. Follows given order.
+    - *options*: %a (artist), %l (album), %g (genre), %n (track number), %t (track title), %y (year/date)
+    - *note*: albums (%l) will be appended with file extensions.
 * *--fn* : File name. 
-	- each argument will be added to the file name separated by a hyphen. All files will have proper file extension added.
-	- *options*: %a (artist), %l (album), %g (genre), %n (track number), %t (track title), %y (year/date)
+    - each argument will be added to the file name separated by a hyphen. All files will have proper file extension added.
+    - *options*: %a (artist), %l (album), %g (genre), %n (track number), %t (track title), %y (year/date)
 * *--dst* : Directory to build new file structure in. 
 
 ####Optional
 
 * *--formats* (*-f*): specify audio formats to search and parse
-	- *options*: mp3 , ogg , flac
-	- *default*: All (mp3, ogg, flac)
+    - *options*: mp3 , ogg , flac
+    - *default*: All (mp3, ogg, flac)
 * *--src* : Directory to search for music files.
-	- will be searched recursively. 
-	- *default*: current working directory.
+    - will be searched recursively. 
+    - *default*: current working directory.
 * *--hours* : Only query and build links to files modified in the last N hours. Takes an integer.
 * *-a, --art*: symbolically link .jpg files from origin directories into new structure.
 * *-v* : Print a lots of extra about deleted directories, failed symbolic link attempts, and the like. If you use this you'll probably want to redirect output (> log.txt) to a file.
@@ -77,20 +82,20 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 
 * Sort only mp3s by: Genre / Artist / Album. Filename is Number - Title, and include album art:
 
-		symmusic.py -a --formats mp3 --dn %g %a %l --fn %t --src /music --dst /by-genre
+        symmusic.py -a --formats mp3 --dn %g %a %l --fn %t --src /music --dst /by-genre
 
 * Sort all formats by: Year / Genre / Album. Filename is Artist - Title AND redirect failures to a log file:
 
-		symmusic.py -v --dn %y %g %l --fn %a %t --src /music --dst /by-year > failures.log
+        symmusic.py -v --dn %y %g %l --fn %a %t --src /music --dst /by-year > failures.log
 
 * Sort by: Artist / Album. File name is Track Number and Title. Delete all directories with less than 3 songs:
-		
-	
-		symmusic.py -n 3 --dn %a %l --fn %n %t --src /music --dst /by-artist
-	
+        
+    
+        symmusic.py -n 3 --dn %a %l --fn %n %t --src /music --dst /by-artist
+    
 * Sort by: Album. Filename is Artist - Year - Title:
 
-		symmusic.py --dn %l --fn %a %y %t --src /music --dst /by-album
+        symmusic.py --dn %l --fn %a %y %t --src /music --dst /by-album
 
 ####Caveats / Oddities
 
@@ -103,12 +108,12 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 ###Comparison to similar utitilies
 
 * [pytagsfs][] is an awesome already implemented version of what I'm trying to do. Its much more flexible then what this script will ever be. For instance, it lets your edit your metadata on the fly by simply rearranging material in the virtual filesystem, and can smartly exclude compilations.
-	- *Issues:* Pytagsfs runs through fuse and stores its map of metadata in memory. For small collections this is fine, but this can be resource intensive on large, multiply sorted collections. (Especially if you don't really need all the functionality.) 
-	- *Comparison to symmusic:* Symmusic generates a directory structure and then is done. It uses less resources, but is also less flexible. Whereas pytagsfs generates a read-write directory structure, symmusic's is basically read-only.
+    - *Issues:* Pytagsfs runs through fuse and stores its map of metadata in memory. For small collections this is fine, but this can be resource intensive on large, multiply sorted collections. (Especially if you don't really need all the functionality.) 
+    - *Comparison to symmusic:* Symmusic generates a directory structure and then is done. It uses less resources, but is also less flexible. Whereas pytagsfs generates a read-write directory structure, symmusic's is basically read-only.
 
 * Music organizers: a number of utilities exist that will reorganize a directory of music files based on their tags.
-	- *Issues*: This modifies you directory structure and filenames. 
-	- *Comparison to symmusic:* Reorganizers of this sort lock you into one directory structure (unless you keep multiple copies of the audio files around). Symmusic allows you to have multiple views with little overhead. Furthermore it never touches your original data. 
+    - *Issues*: This modifies you directory structure and filenames. 
+    - *Comparison to symmusic:* Reorganizers of this sort lock you into one directory structure (unless you keep multiple copies of the audio files around). Symmusic allows you to have multiple views with little overhead. Furthermore it never touches your original data. 
 
 
 [pytagsfs]: http://www.pytagsfs.org/

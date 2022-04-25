@@ -59,6 +59,7 @@ def parseArgs():
                   choices=formatlist,help='Formats to search for')
   ap.add_argument('-s', '--src', default=os.getcwd(),help='Source directory.')
   ap.add_argument('-d','--dst', required=True,help='Destination path') 
+  ap.add_argument('--lower', action='store_true',help='Convert strings to lower case')   
   return ap.parse_args()
 
 def getDict(args,dictionary):
@@ -96,7 +97,6 @@ def getTag(f,fun,tagname):
         cleaned = tag.encode('UTF-8') # Encode things just in case.
         # Convert '/' in names to '-' to avoid file path issues.
         slashproofed = re.sub(r"/","-",str(cleaned,"utf-8")) 
-        print("{0}".format(slashproofed))
         return slashproofed
       else:
         return 'Unknown'
@@ -105,13 +105,20 @@ def getTag(f,fun,tagname):
   else:
       return 'Unknown'
   
-def getTagList(f,fun,ext,tagnames):
+def getTagList(f,fun,ext,tagnames,lower):
   """ Get multiple tags for a file, based on a given list """
   tags = []
   for tagname in tagnames:
     tag = getTag(f,fun,tagname)
-    if tagname == 'album':
-      tag = tag + ' [' + ext + ']'
+    if lower == True:
+        tag = tag.lower()
+    if tagname == 'tracknumber':
+        if tag == 'unknown':
+            tag = ""
+        counter = tag.rfind("-")
+        if counter > 0:
+            tag = tag[:tag.rfind("-")]
+        tag=tag.zfill(2)    
     tags.append(tag)
   return tags
 
@@ -123,12 +130,12 @@ def makeDirStructure(dirs,nametags,ext,source,base):
       if os.path.exists(os.path.join(base,tag)) is False:
         os.makedirs(os.path.join(base,tag))
       base = os.path.join(base,tag)
-    name = " - ".join(nametags) + ext
+    name = "-".join(nametags) + ext
     os.symlink(source,os.path.join(base,name))
   except (OSError,  AttributeError):
     pass
   
-def theWholeEnchilada(encoding,dirs,names,dst,hours):
+def theWholeEnchilada(encoding,dirs,names,dst,hours,lower):
   """ A wrapper to bring everything together. Returns file paths that
   failed to create a symbolic link. """
   made = 0 
@@ -138,8 +145,8 @@ def theWholeEnchilada(encoding,dirs,names,dst,hours):
     files = getRecentFiles(files,hours)
   for f in files:
     try:
-      dirtags = getTagList(f,encoding[1],encoding[2],dirs)
-      nametags = getTagList(f,encoding[1],encoding[2],names)
+      dirtags = getTagList(f,encoding[1],encoding[2],dirs,lower)
+      nametags = getTagList(f,encoding[1],encoding[2],names,lower)
       makeDirStructure(dirtags,nametags,encoding[2],f,dst)
       made += 1
     except AttributeError or UnboundLocalError:
@@ -272,6 +279,7 @@ def main():
   clean = args.clean                  #Clean destination
   number = args.number                #Minimum number for small dirs
   hours = args.hours                  #Hours (update only modified files)
+  lower = args.lower                # to lowercase
 
   #Check POSIX environment
   if os.name != 'posix':
@@ -290,15 +298,15 @@ def main():
   #This is ugly...but there aren't many formats, and it is easy.
   if 'mp3' in formats:
     mp3 = [ getMusic(src,".mp3"), EasyID3, '.mp3' ]
-    mp3fails = theWholeEnchilada(mp3,dirs,names,dst,hours)
+    mp3fails = theWholeEnchilada(mp3,dirs,names,dst,hours,lower)
 
   if 'flac' in formats:
     flac = [ getMusic(src,".flac"), FLAC, '.flac' ]
-    flacfails = theWholeEnchilada(flac,dirs,names,dst,hours)
+    flacfails = theWholeEnchilada(flac,dirs,names,dst,hours,lower)
 
   if 'ogg' in formats:
     ogg = [ getMusic(src,".ogg"), OggVorbis, '.ogg' ]
-    oggfails = theWholeEnchilada(ogg,dirs,names,dst,hours)
+    oggfails = theWholeEnchilada(ogg,dirs,names,dst,hours,lower)
 
   #Print failed lists for redirection
   if verbose is True:
