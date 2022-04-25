@@ -95,8 +95,8 @@ def getTag(f,fun,tagname):
       if tag:
         cleaned = tag.encode('UTF-8') # Encode things just in case.
         # Convert '/' in names to '-' to avoid file path issues.
-        print("{0}".format(cleaned))
-        slashproofed = re.sub(r"/","-",format(cleaned)) 
+        slashproofed = re.sub(r"/","-",str(cleaned,"utf-8")) 
+        print("{0}".format(slashproofed))
         return slashproofed
       else:
         return 'Unknown'
