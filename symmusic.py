@@ -77,7 +77,7 @@ def getMusic(src,pattern):
     for fn in files:
       if fn.endswith(pattern):
         musiclist.append(os.path.join(root, fn))
-  print "Number of %s found: %d" % (pattern,len(musiclist))
+  print("Number of {0} found: {1}".format(pattern,len(musiclist)))
   return musiclist
 
 def getTag(f,fun,tagname):
@@ -89,13 +89,14 @@ def getTag(f,fun,tagname):
   except (ValueError, IOError,  \
           mutagen.flac.FLACNoHeaderError, mutagen.flac.error):
     tags = 'Unknown'
-  if tags.has_key(tagname):
+  if tagname in tags:
     try:
       tag = tags[tagname][0]
       if tag:
         cleaned = tag.encode('UTF-8') # Encode things just in case.
         # Convert '/' in names to '-' to avoid file path issues.
-        slashproofed = re.sub(r"/","-",cleaned) 
+        print("{0}".format(cleaned))
+        slashproofed = re.sub(r"/","-",format(cleaned)) 
         return slashproofed
       else:
         return 'Unknown'
@@ -109,7 +110,7 @@ def getTagList(f,fun,ext,tagnames):
   tags = []
   for tagname in tagnames:
     tag = getTag(f,fun,tagname)
-    if tagname is 'album':
+    if tagname == 'album':
       tag = tag + ' [' + ext + ']'
     tags.append(tag)
   return tags
@@ -144,7 +145,7 @@ def theWholeEnchilada(encoding,dirs,names,dst,hours):
     except AttributeError or UnboundLocalError:
       fails.append(f)
       pass
-  print "Successful %s makes: %i" % (encoding[2],made)
+  print("Successful {0} makes: {1}".format(encoding[2],made))
   return fails
 
 ###
@@ -154,7 +155,7 @@ def theWholeEnchilada(encoding,dirs,names,dst,hours):
 def copyAlbumArt(pattern,dst,hours):
   """ Check for image formats in newbase, if not there try to 
   symlink over from source """
-  print "Copying Album Art...."
+  print("Copying Album Art....")
   symlinks = 0
   # One problem here, calculates time after compilation so there is a chance 
   # to miss files at very beginning of modified period based on time elapsed
@@ -188,7 +189,7 @@ def getOriginArt(pattern,origindir,dirpath):
 def cleanDestination(v,dst):
   """Check the created directory for broken links and remove them.
   Remove any empty directories """
-  print "Cleaning..."
+  print("Cleaning...")
   brokelinks = removeBrokeLinks(v,dst)
   removeEmptyDirs(v,dst)
   return brokelinks
@@ -203,7 +204,7 @@ def removeBrokeLinks(v,path):
         os.remove(abspath)
         brokelinks += 1
         if v is True:
-          print "Removing broken link:", abspath
+          print ("Removing broken link: {0}".format(abspath))
   return brokelinks
 
 def removeEmptyDirs(v,path):
@@ -221,7 +222,7 @@ def removeEmptyDirs(v,path):
   if len(files) == 0:
     os.rmdir(path)
     if v is True:
-      print "Removing empty folder:", path
+      print ("Removing empty folder: {0}".format(path))
 
 def removeSmallDirs(n,v,path):
   """ Remove directories with less than n files. Useful to avoid lots of
@@ -242,7 +243,7 @@ def removeSmallDirs(n,v,path):
   if 0 < symcount < n :
     shutil.rmtree(path)
     if v is True:
-      print "Removing small directory:", path
+      print ("Removing small directory: {0}".format(path))
 
 def getRecentFiles(files,hours):
   recentfiles = []
@@ -250,7 +251,7 @@ def getRecentFiles(files,hours):
   for f in files:
     if os.path.getmtime(f) > modseconds:
       recentfiles.append(f)
-  print "Files modified in the past %i hours: " % (hours), len(recentfiles) 
+  print("Files modified in the past {0} hours: {1}".format(hours, len(recentfiles)))
   return recentfiles    
 
 ###
@@ -273,13 +274,13 @@ def main():
   hours = args.hours                  #Hours (update only modified files)
 
   #Check POSIX environment
-  if os.name is not 'posix':
-    print 'Symmusic requires a posix environment!'
+  if os.name != 'posix':
+    print ('Symmusic requires a posix environment!')
     sys.exit()
 
   #Check that dst isn't inside src
   if os.path.commonprefix([src, dst]) is src:
-    print 'Destination is inside source. This is not good. Failing!'
+    print ('Destination is inside source. This is not good. Failing!')
     sys.exit()
 
   #Set hours to 0 if not set so we can pass hours variable
@@ -301,25 +302,26 @@ def main():
 
   #Print failed lists for redirection
   if verbose is True:
-    print '\n' + "FAILURES:" + '\n'
-    print mp3fails, flacfails, oggfails
+    print ('\n' + "FAILURES:" + '\n')
+    print ("{0} {1} {2}".format(mp3fails, flacfails, oggfails))
 
   #Clean out small directories
-  if number:
+  if number is not None:
     removeSmallDirs(args.number,verbose,dst)
     clean = True
   
   #Clean destination of empty dirs and broken links.
   if clean is True:
     brokelinks = cleanDestination(verbose,dst)
-    print "Broken links removed: ", brokelinks
+    print("Broken links removed: {0} ".format(brokelinks))
 
   #Copy album art if requested
   if art is True:
     artmakes = copyAlbumArt('.jpg',dst,hours)
-    print "Artwork images copied:", artmakes
+    print ("Artwork images copied: {0}".format(artmakes))
+
 
 if __name__ == '__main__':
     main()
-
-
+else:
+    print("barometers loaded as a module")

@@ -1,5 +1,11 @@
 #This Fork
+
 Fixes:
+
+Python3 upgrade
+
+Fixes:
+
 * Crashes related to IOError (broken links)
 * Crashes related to mutagen.flac.error
 
@@ -79,8 +85,9 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 
 * Sort by: Artist / Album. File name is Track Number and Title. Delete all directories with less than 3 songs:
 		
+	
 		symmusic.py -n 3 --dn %a %l --fn %n %t --src /music --dst /by-artist
-
+	
 * Sort by: Album. Filename is Artist - Year - Title:
 
 		symmusic.py --dn %l --fn %a %y %t --src /music --dst /by-album
@@ -106,6 +113,6 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 
 [pytagsfs]: http://www.pytagsfs.org/
 [mutagen]: http://code.google.com/p/mutagen/
-[unidecode]: http://pypi.python.org/pypi/Unidecode/ 
+[unidecode]: http://pypi.python.org/pypi/Unidecode/
 [Subsonic]: http://www.subsonic.org/
 
