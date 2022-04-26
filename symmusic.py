@@ -71,9 +71,10 @@ def getDict(args,dictionary):
 
 def processString(txt):
     """ Remove special characters from tags """
-    specialChars = "!#$%^&*()/\\:|\"" 
+    specialChars = "/\\*?;\':|\.\"" 
     for specialChar in specialChars:
         txt = txt.replace(specialChar, '')
+        txt = txt.replace('&', 'and')
     return txt
 
 

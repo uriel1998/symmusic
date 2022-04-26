@@ -1,35 +1,21 @@
-#This Fork
+# symmusic
 
-Fixes:
+Creates pseudo-libraries of music based on tags and using your regular filesystem through using symbolic links.
 
-Python3 upgrade
-added --lower for lowercase
-changed divider to "-" (maybe to make configurable later?)
-removed extension on album as dirname (like, why)
-changed tracknumber to be padded 2 digit of the actual track number
-00 if no track number, not unknown
-if leading with unknown track number (e.g. ^00-trackname) then omit track# (to make configurable later)
-validation and removal of special characters from filename (to make configurable later)
+## Contents
 
---lower --dn %l --fn %n-%a-%t --art --formats mp3 --src /home/steven/music --dst /home/steven/tmp/symalbum
+ 1. [About](#1-about)
+ 2. [License](#2-license)
+ 3. [Prerequisites](#3-prerequisites)
+ 4. [Installation](#4-installation)
+ 5. [Usage](#5-usage)
+ 6. [TODO](#6-todo)
 
+***
 
-Fixes:
-
-* Crashes related to IOError (broken links)
-* Crashes related to mutagen.flac.error
-
-#Overview
+## 1. About
 
 Symmusic is meant for poorly-named music collections which you don't want to manipulate, but need to browse in a nice manner. It recursively reads a directory for audio tags and uses them to build a new  directory structure. The bottom-level audio files are then symbolically linked to their originating file. This allows one to keep multiple directories organized by artist, genre, album, etc without much disk overhead even for large music collections.
-
-###Dependencies
-
-* UNIX-like OS. (Linux, Mac OSX)
-* Python (3.9 and more)
-* [mutagen][] -- a python module to handle audio metatdata
-
-#Features
 
 * Works with mp3, FLAC, OGGVorbis. Can choose 1, 2 or all 3. 
 * Command line specification of hierarchy based on audio tags.
@@ -40,17 +26,18 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 * (Option) Delete broken links and empty directories.
 * (Option) Return list of failed creations that can be redirected.
 
-###TODO
+## 2. License
 
-* Longer term, find windows workaround for symbolic links
-* Option to write relative rather than absolute path links.
-* Allow complex directory specification (e.g. multiple tags)
+## 3. Prerequisites
 
-#Use
+* UNIX-like OS. (Linux, Mac OSX)
+* Python (3.x; tested on 3.9)
+* [mutagen] -- a python module to handle audio metatdata
+* argparse
 
-###Command line options
+## 4. Installation
 
-####Required
+## 5. Usage
 
 * *--dn* : directory names. 
     - each argument will create a directory level. Follows given order.
@@ -60,8 +47,6 @@ Symmusic is meant for poorly-named music collections which you don't want to man
     - each argument will be added to the file name separated by a hyphen. All files will have proper file extension added.
     - *options*: %a (artist), %l (album), %g (genre), %n (track number), %t (track title), %y (year/date)
 * *--dst* : Directory to build new file structure in. 
-
-####Optional
 
 * *--formats* (*-f*): specify audio formats to search and parse
     - *options*: mp3 , ogg , flac
@@ -75,15 +60,15 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 * *-n, --number*: Takes an integer. This integer is the minimum number of songs that a directory must have at the end of creation. Directories with less will be deleted. Useful for excluding compilations from artist lists. Use of this option implies *--clean*.
 * *-c, --clean*: Clean given destination directory of broken symbolic links and empty directories.
 
-###Examples
+--lower
 
-###Use Cases
+## 5a. Use Cases
 
-* Use with [Subsonic][] to sort your files in multiple ways.
+* Use with [Subsonic] to sort your files in multiple ways.
 * Browse a directory you have read-only access to nicely.
 * Combine multiple users' poorly organized music folders into one nicely sorted directory without much overhead.
 
-###Syntax Examples
+## 5b. Syntax Examples
 
 * Sort only mp3s by: Genre / Artist / Album. Filename is Number - Title, and include album art:
 
@@ -102,27 +87,19 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 
         symmusic.py --dn %l --fn %a %y %t --src /music --dst /by-album
 
-####Caveats / Oddities
-
-* All albums are appended with a tag of what filetype the contain. So "The White Album" becomes "The White Album [.mp3]". This is something my own collection needs because I often have flac and mp3 versions of the same files. 
-
-* When a metadata tag can't be read it *should* return 'Unknown'. The effect is you might have (large) 'Unknown' directories in each level of your hierarchy. 
-
-* I wouldn't put much faith in the 'files created' number that is printed. Its a dumb counter. 
-
-###Comparison to similar utitilies
-
-* [pytagsfs][] is an awesome already implemented version of what I'm trying to do. Its much more flexible then what this script will ever be. For instance, it lets your edit your metadata on the fly by simply rearranging material in the virtual filesystem, and can smartly exclude compilations.
-    - *Issues:* Pytagsfs runs through fuse and stores its map of metadata in memory. For small collections this is fine, but this can be resource intensive on large, multiply sorted collections. (Especially if you don't really need all the functionality.) 
-    - *Comparison to symmusic:* Symmusic generates a directory structure and then is done. It uses less resources, but is also less flexible. Whereas pytagsfs generates a read-write directory structure, symmusic's is basically read-only.
-
-* Music organizers: a number of utilities exist that will reorganize a directory of music files based on their tags.
-    - *Issues*: This modifies you directory structure and filenames. 
-    - *Comparison to symmusic:* Reorganizers of this sort lock you into one directory structure (unless you keep multiple copies of the audio files around). Symmusic allows you to have multiple views with little overhead. Furthermore it never touches your original data. 
+## 6. Fork changes
+    * Crashes related to IOError (broken links)
+* Crashes related to mutagen.flac.error
+* Python3 upgrade
+* added --lower for lowercase
+* changed divider to "-" (maybe to make configurable later?)
+* removed extension on album as dirname (like, why)
+* changed tracknumber to be padded 2 digit of the actual track number
+* 00 if no track number, not unknown
+* if leading with unknown track number (e.g. ^00-trackname) then omit track# (to make configurable later)
+* validation and removal of special characters from filename (to make configurable later)
+    specialChars = "/\\*?;\':|\.\"" 
+* replaces & with and (to make configurable later)
 
 
-[pytagsfs]: http://www.pytagsfs.org/
-[mutagen]: http://code.google.com/p/mutagen/
-[unidecode]: http://pypi.python.org/pypi/Unidecode/
-[Subsonic]: http://www.subsonic.org/
-
+## 6. TODO
