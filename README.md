@@ -28,6 +28,13 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 
 ## 2. License
 
+This was originally under the "beerware" license by the original author, reproduced below. 
+
+"THE BEER-WARE LICENSE" (Revision 42):
+jmeb wrote this file. As long as you retain this notice you
+can do whatever you want with this stuff. If we meet some day, and you think this stuff is worth it, you can buy me a beer in return. 
+
+
 ## 3. Prerequisites
 
 * UNIX-like OS. (Linux, Mac OSX)
@@ -88,7 +95,8 @@ Symmusic is meant for poorly-named music collections which you don't want to man
         symmusic.py --dn %l --fn %a %y %t --src /music --dst /by-album
 
 ## 6. Fork changes
-    * Crashes related to IOError (broken links)
+
+* Crashes related to IOError (broken links)
 * Crashes related to mutagen.flac.error
 * Python3 upgrade
 * added --lower for lowercase
@@ -103,3 +111,5 @@ Symmusic is meant for poorly-named music collections which you don't want to man
 
 
 ## 6. TODO
+
+Make some of these decisions above configurable instead of hard-coded.
